@@ -1,46 +1,43 @@
-# AI Writing Evaluator
+# AI Demo Room
 
-一个基于人工智能的英语写作评估工具，帮助用户提升英语写作水平。
+一个展示各种人工智能应用样品的演示空间，让您体验和了解最新的 AI 技术。
 
-## 🎥 演示视频
+## 🖼️ 项目展示
 
 <div align="center">
-  <iframe src="public/video/demo_2.5x.mp4" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+  <img src="public/img/image.png" alt="AI Demo Room" width="100%" />
 </div>
 
-## ✨ 主要功能
+## ✨ 功能特点
 
-- **智能评分系统**
-  - 支持 100 分制和 25 分制评分
-  - 提供整体评分和分项评分
+- **写作类**
+  - 作文批改：智能评分、词汇分析、句子分析
+  - 文档写作：智能文档生成与编辑
+  - 目录写作：结构化内容生成
+  - 长文章写作：智能长文创作
 
-- **词汇分析**
-  - CEFR 词汇等级标注 (A1-C2)
-  - 通过不同颜色直观展示词汇等级
-  - 词汇使用统计和建议
+- **数据分析类**
+  - 金融财报分析：智能财务数据分析
 
-- **句子分析**
-  - 逐句评估和点评
-  - 语法错误检测
-  - 修改建议
+- **智能客服类**
+  - 医疗问诊助手：智能医疗咨询
 
-- **文章结构分析**
-  - 段落结构评估
-  - 文章连贯性分析
-  - 内容相关性评估
+- **多模态类**
+  - 文生图：文本转图像生成
+  - 看图写作：图像内容描述与创作
 
-- **其他特性**
-  - 语速动词检查
-  - 语态一致性检查
-  - 实时评估反馈
+- **代码类**
+  - 代码助手：智能编程辅助
+  - 一键生成网页：快速网页开发
+  - 沙盒环境：安全代码测试
 
 ## 🚀 快速开始
 
 1. 克隆项目
 ```bash
-git clone https://github.com/Hehua-Fan/ai-writing-evaluator.git
+git clone https://github.com/Hehua-Fan/ai-demoroom.git
 
-cd ai-writing-evaluator
+cd ai-demoroom
 ```
 
 2. 安装依赖
@@ -65,15 +62,10 @@ npm run dev
 
 ## 📝 使用说明
 
-1. 在文本框中输入或粘贴英语文章
-2. 选择所需的评分制度（100分制或25分制）
-3. 根据需要开启语速动词检查和语态一致性检查
-4. 点击"开始批改"按钮
-5. 查看评估结果，包括：
-   - 整体评分
-   - 词汇等级标注
-   - 逐句分析
-   - 修改建议
+1. 从顶部导航栏选择您想要体验的 AI 功能类别
+2. 在子菜单中选择具体的功能模块
+3. 按照界面提示进行操作
+4. 查看 AI 分析结果和建议
 
 ## 📄 许可证
 
@@ -88,4 +80,4 @@ MIT License - 详见 [LICENSE](./LICENSE) 文件
 如有问题或建议，请通过以下方式联系：
 
 - Email: forhheart5532@gmail.com
-- GitHub Issues: [提交 Issue](https://github.com/Hehua-Fan/ai-writing-evaluator/issues)
+- GitHub Issues: [提交 Issue](https://github.com/Hehua-Fan/ai-demoroom/issues)
