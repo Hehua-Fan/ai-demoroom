@@ -6,8 +6,8 @@ import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Writing Evaluator",
-  description: "AI-powered writing evaluation tool",
+  title: "AI Demo Room",
+  description: "A showcase of various AI applications and demos",
 };
 
 export default function RootLayout({
