@@ -129,7 +129,7 @@ const ScoreComments: React.FC<ScoreCommentsProps> = ({ evaluationResult }) => {
         ) : (
           <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-400">
             <FileText className="h-12 w-12 mb-3" />
-            <p className="text-xs">点击"开始批改"按钮进行分析！</p>
+            <p className="text-xs">点击 开始批改 按钮进行分析！</p>
           </div>
         )}
       </CardContent>
