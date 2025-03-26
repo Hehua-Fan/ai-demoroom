@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
@@ -65,9 +65,23 @@ const Header = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const menuItems = [
@@ -144,12 +158,12 @@ const Header = () => {
         />
       </Link>
 
-      <nav className="flex-1 flex justify-center">
+      <nav className="flex-1 flex justify-center" ref={navRef}>
         <div className="flex bg-gray-50 rounded-lg">
           {menuItems.map((item) => (
             <div key={item.name} className="relative">
               <button
-                className={`flex items-center px-4 py-3 text-sm font-bold rounded-lg transition-all duration-300 ease-in-out transform ${
+                className={`flex items-center px-4 py-3 text-sm font-bold rounded-lg transition-all duration-300 ease-in-out transform cursor-pointer ${
                   pathname.includes(item.path)
                     ? "text-white bg-[#706eff] shadow-md"
                     : "text-gray-700 hover:text-[#706eff] hover:bg-blue-50"
@@ -184,7 +198,7 @@ const Header = () => {
                   {item.subItems.map((subItem) => (
                     <button
                       key={subItem.name}
-                      className={`flex items-center w-full px-4 py-3 text-sm ${
+                      className={`flex items-center w-full px-4 py-3 text-sm cursor-pointer ${
                         pathname === subItem.path
                           ? "text-[#706eff] bg-blue-50"
                           : "text-gray-700 hover:text-[#706eff] hover:bg-blue-50"
