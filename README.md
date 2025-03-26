@@ -5,7 +5,7 @@
 ## 🎥 演示视频
 
 <div align="center">
-  <iframe src="/video/demo.mp4" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
+  <iframe src="public/video/demo_2.5x.mp4" width="100%" height="400" frameborder="0" allowfullscreen></iframe>
 </div>
 
 ## ✨ 主要功能
