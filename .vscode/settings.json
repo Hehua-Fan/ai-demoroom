@@ -1,0 +1,31 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 33060,
+            "driver": "MySQL",
+            "name": "MySQL",
+            "database": "lab_university",
+            "username": "root",
+            "password": "fHH991200cnz"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "115.190.45.226",
+            "port": 8306,
+            "driver": "MySQL",
+            "name": "ai_writing",
+            "database": "ai_assistant",
+            "username": "root"
+        }
+    ]
+}

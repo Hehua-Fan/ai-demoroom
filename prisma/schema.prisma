@@ -1,0 +1,1587 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_agent {
+  id                BigInt    @id
+  avatar            String?   @db.VarChar(64)
+  state             Int?
+  type              Int?
+  heat              Int?
+  guides            String?   @db.VarChar(255)
+  catalogue_id      BigInt?
+  prompt            String?   @db.VarChar(255)
+  admin             Int?      @db.TinyInt
+  prologue          String?   @db.VarChar(255)
+  agent_alias       String    @db.VarChar(50)
+  knowledge         Int?      @db.TinyInt
+  gpt_model         Int?
+  platform_id       String?   @db.VarChar(255)
+  platform_uuid     String    @unique(map: "idx_uuid") @db.VarChar(255)
+  agent_name        String    @db.VarChar(255)
+  background        String?   @db.VarChar(255)
+  auto_send_voice   Int?      @db.TinyInt
+  allow_voice_input Int?      @db.TinyInt
+  description       String?   @db.VarChar(255)
+  del_flag          String?   @db.Char(1)
+  create_by         String    @db.VarChar(32)
+  update_by         String?   @db.VarChar(32)
+  create_time       DateTime? @db.DateTime(0)
+  update_time       DateTime? @db.DateTime(0)
+
+  @@index([create_by], map: "idx_create_by")
+  @@index([del_flag], map: "idx_del_flag")
+  @@index([type, agent_name, agent_alias], map: "index_name")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_catalogue {
+  id          BigInt    @id @default(autoincrement())
+  teaching_id String?   @db.VarChar(255)
+  title       String?   @db.VarChar(64)
+  type        Boolean?
+  state       Boolean   @default(false)
+  token_id    String?   @db.VarChar(64)
+  del_flag    String?   @db.Char(1)
+  description String?   @db.VarChar(255)
+  kch         String?   @db.VarChar(255)
+  kkdw        String?   @db.VarChar(255)
+  create_by   String    @db.VarChar(32)
+  update_by   String?   @db.VarChar(32)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+
+  @@index([del_flag], map: "idx_del_flag")
+  @@index([token_id], map: "idx_token_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_catalogue_tokens {
+  id          String    @id @db.VarChar(64)
+  level       Int?
+  type        Int?
+  expire_date DateTime? @db.DateTime(0)
+  jwt_token   String?   @db.VarChar(1024)
+  open_token  String?   @db.VarChar(255)
+  create_by   String    @db.VarChar(64)
+  update_by   String?   @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+
+  @@index([level], map: "idx_level")
+  @@index([type], map: "idx_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_chatting {
+  id             String    @db.VarChar(32)
+  sort           Boolean?
+  role_type      Int?
+  platform_uuid  String?   @db.VarChar(64)
+  platform_id    String    @db.VarChar(64)
+  upload_image   Int?      @db.TinyInt
+  button_configs String?   @db.MediumText
+  group_name     String?   @db.VarChar(255)
+  image_input    String?   @db.VarChar(255)
+  file_contrast  Boolean?
+  file_review    Boolean?
+  input_text     Boolean?
+  upload_file    Boolean?
+  chatting_name  String    @db.VarChar(32)
+  agent_id       BigInt?
+  del_flag       String?   @db.Char(1)
+  description    String?   @db.VarChar(128)
+  create_by      String    @db.VarChar(32)
+  update_by      String?   @db.VarChar(32)
+  create_time    DateTime? @default(now()) @db.DateTime(0)
+  update_time    DateTime? @db.DateTime(0)
+
+  @@id([id, platform_id])
+  @@index([agent_id], map: "idx_agent_id")
+  @@index([create_by], map: "idx_create_by")
+  @@index([role_type], map: "idx_role_type")
+  @@index([chatting_name], map: "index_name")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_chatting_records {
+  id                 BigInt    @id @default(autoincrement())
+  collect_is         Int?      @default(0) @db.TinyInt
+  star_is            Boolean?  @default(false)
+  debug              Boolean?
+  costly_time        BigInt?
+  name               String?   @db.VarChar(64)
+  avatar             String?   @db.VarChar(255)
+  finish             Boolean?
+  conversation_id    String?   @db.VarChar(255)
+  complete           Boolean?
+  platform_reference String?   @db.VarChar(1024)
+  reference          String?   @db.VarChar(1024)
+  reference_type     String?   @db.VarChar(32)
+  parent_id          BigInt?
+  files              String?   @db.VarChar(1024)
+  platform_files     String?   @db.VarChar(1024)
+  platform_images    String?   @db.VarChar(1024)
+  images             String?   @db.VarChar(1024)
+  record_type        String?   @db.VarChar(32)
+  platform_id        String?   @db.VarChar(255)
+  chatting_uuid      String?   @db.VarChar(255)
+  chatting_id        BigInt
+  problem_content    String?   @db.Text
+  reply_content      String?   @db.Text
+  del_flag           String?   @default("0") @db.Char(1)
+  remarks            String?   @db.VarChar(255)
+  update_by          String?   @db.VarChar(32)
+  create_by          String?   @db.VarChar(32)
+  create_time        DateTime? @db.DateTime(0)
+  update_time        DateTime? @db.DateTime(0)
+
+  @@index([chatting_id], map: "idx_chatting_id")
+  @@index([create_by], map: "idx_create_by")
+  @@index([del_flag], map: "idx_del_flag")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_chatting_tool {
+  id          BigInt    @id
+  name        String?   @db.VarChar(255)
+  avater      String?   @db.VarChar(255)
+  type        Int?      @db.TinyInt
+  jump_type   Int?      @db.TinyInt
+  url         String?   @db.VarChar(255)
+  description String?   @db.VarChar(255)
+  create_by   String    @db.VarChar(32)
+  update_by   String?   @db.VarChar(32)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_courseware_management {
+  id                BigInt    @id @default(autoincrement())
+  parent_id         String?   @default("0") @db.VarChar(32)
+  platform_identity String?   @db.VarChar(255)
+  file_name         String?   @db.VarChar(64)
+  file_type         String?   @db.VarChar(2)
+  file_suffix       String?   @db.VarChar(64)
+  file_url          String?   @db.VarChar(256)
+  state             Int?      @default(1)
+  create_by         String    @db.VarChar(32)
+  update_by         String?   @db.VarChar(32)
+  create_time       DateTime? @db.DateTime(0)
+  update_time       DateTime? @db.DateTime(0)
+  remarks           String?   @db.VarChar(255)
+  del_flag          String?   @default("0") @db.Char(1)
+
+  @@index([del_flag], map: "idx_del_flag")
+  @@index([parent_id], map: "idx_parent_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_knowledge_point {
+  id             String    @id @db.VarChar(32)
+  knowledge_name String?   @db.VarChar(256)
+  create_by      String    @db.VarChar(32)
+  update_by      String?   @db.VarChar(32)
+  create_time    DateTime? @db.DateTime(0)
+  update_time    DateTime? @db.DateTime(0)
+  remarks        String?   @db.VarChar(255)
+  del_flag       String?   @default("0") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_problem_knowledge {
+  id           String    @id @db.VarChar(32)
+  problem_id   String?   @db.VarChar(32)
+  knowledge_id String?   @db.VarChar(32)
+  create_by    String    @db.VarChar(32)
+  update_by    String?   @db.VarChar(32)
+  create_time  DateTime? @db.DateTime(0)
+  update_time  DateTime? @db.DateTime(0)
+  remarks      String?   @db.VarChar(255)
+  del_flag     String?   @default("0") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_problem_knowledge_points {
+  id                 BigInt    @id @default(autoincrement())
+  points             String?   @db.VarChar(1024)
+  catalogue_id       BigInt?
+  agent_id           BigInt?
+  chatting_id        String?   @db.VarChar(255)
+  chatting_record_id BigInt?
+  create_by          String    @db.VarChar(32)
+  create_time        DateTime? @db.DateTime(0)
+
+  @@index([agent_id], map: "idx_agent_id")
+  @@index([catalogue_id], map: "idx_catalogue_id")
+  @@index([chatting_id], map: "idx_chatting_id")
+  @@index([chatting_record_id], map: "idx_chatting_record_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ai_problem_record {
+  id                    BigInt    @id @default(autoincrement())
+  chatting_records_id   BigInt
+  problem_code          String?   @db.VarChar(32)
+  problem_ai_reply      String?   @db.MediumText
+  problem_type          Int?
+  problem_description   String?   @db.Text
+  replay_link_knowledge String?   @db.VarChar(255)
+  replay_context        String?   @db.MediumText
+  replay_more_info      String?   @db.VarChar(1024)
+  records_uuid          String?   @db.VarChar(255)
+  more_info             String?   @db.Text
+  is_context            Int?      @db.TinyInt
+  problem_level         Int?
+  problem_status        Int?      @db.TinyInt
+  remarks               String?   @db.VarChar(255)
+  replay_file           String?   @db.VarChar(255)
+  problem_file          String?   @db.VarChar(255)
+  context_ids           String?   @db.VarChar(512)
+  del_flag              String?   @default("0") @db.Char(1)
+  create_by             String    @db.VarChar(32)
+  update_by             String?   @db.VarChar(32)
+  create_time           DateTime? @db.DateTime(0)
+  update_time           DateTime? @db.DateTime(0)
+
+  @@index([chatting_records_id], map: "idx_chatting_records_id")
+  @@index([create_by], map: "idx_create_by")
+  @@index([del_flag], map: "idx_del_flag")
+  @@index([problem_status], map: "idx_problem_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model config_info {
+  id                 BigInt   @id @default(autoincrement())
+  data_id            String   @db.VarChar(255)
+  group_id           String?  @db.VarChar(128)
+  content            String   @db.LongText
+  md5                String?  @db.VarChar(32)
+  gmt_create         DateTime @default(now()) @db.DateTime(0)
+  gmt_modified       DateTime @default(now()) @db.DateTime(0)
+  src_user           String?  @db.Text
+  src_ip             String?  @db.VarChar(50)
+  app_name           String?  @db.VarChar(128)
+  tenant_id          String?  @default("") @db.VarChar(128)
+  c_desc             String?  @db.VarChar(256)
+  c_use              String?  @db.VarChar(64)
+  effect             String?  @db.VarChar(64)
+  type               String?  @db.VarChar(64)
+  c_schema           String?  @db.Text
+  encrypted_data_key String   @default("") @db.VarChar(1024)
+
+  @@unique([data_id, group_id, tenant_id], map: "uk_configinfo_datagrouptenant")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model config_info_aggr {
+  id           BigInt   @id @default(autoincrement())
+  data_id      String   @db.VarChar(255)
+  group_id     String   @db.VarChar(128)
+  datum_id     String   @db.VarChar(255)
+  content      String   @db.LongText
+  gmt_modified DateTime @db.DateTime(0)
+  app_name     String?  @db.VarChar(128)
+  tenant_id    String?  @default("") @db.VarChar(128)
+
+  @@unique([data_id, group_id, tenant_id, datum_id], map: "uk_configinfoaggr_datagrouptenantdatum")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model config_info_beta {
+  id                 BigInt   @id @default(autoincrement())
+  data_id            String   @db.VarChar(255)
+  group_id           String   @db.VarChar(128)
+  app_name           String?  @db.VarChar(128)
+  content            String   @db.LongText
+  beta_ips           String?  @db.VarChar(1024)
+  md5                String?  @db.VarChar(32)
+  gmt_create         DateTime @default(now()) @db.DateTime(0)
+  gmt_modified       DateTime @default(now()) @db.DateTime(0)
+  src_user           String?  @db.Text
+  src_ip             String?  @db.VarChar(50)
+  tenant_id          String?  @default("") @db.VarChar(128)
+  encrypted_data_key String   @default("") @db.VarChar(1024)
+
+  @@unique([data_id, group_id, tenant_id], map: "uk_configinfobeta_datagrouptenant")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model config_info_tag {
+  id           BigInt   @id @default(autoincrement())
+  data_id      String   @db.VarChar(255)
+  group_id     String   @db.VarChar(128)
+  tenant_id    String?  @default("") @db.VarChar(128)
+  tag_id       String   @db.VarChar(128)
+  app_name     String?  @db.VarChar(128)
+  content      String   @db.LongText
+  md5          String?  @db.VarChar(32)
+  gmt_create   DateTime @default(now()) @db.DateTime(0)
+  gmt_modified DateTime @default(now()) @db.DateTime(0)
+  src_user     String?  @db.Text
+  src_ip       String?  @db.VarChar(50)
+
+  @@unique([data_id, group_id, tenant_id, tag_id], map: "uk_configinfotag_datagrouptenanttag")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model config_tags_relation {
+  id        BigInt
+  tag_name  String  @db.VarChar(128)
+  tag_type  String? @db.VarChar(64)
+  data_id   String  @db.VarChar(255)
+  group_id  String  @db.VarChar(128)
+  tenant_id String? @default("") @db.VarChar(128)
+  nid       BigInt  @id @default(autoincrement())
+
+  @@unique([id, tag_name, tag_type], map: "uk_configtagrelation_configidtag")
+  @@index([tenant_id], map: "idx_tenant_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model english_writing_review {
+  id          Int       @id @default(autoincrement())
+  user_id     String    @db.VarChar(255)
+  essay_text  String    @db.Text
+  review_json Json
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model file_info {
+  ID          String   @id @db.VarChar(64)
+  DELETED     Int      @default(0)
+  CREATE_DEPT String?  @db.VarChar(200)
+  CREATE_USER String?  @db.VarChar(200)
+  CREATE_TIME DateTime @default(now()) @db.DateTime(0)
+  UPDATE_USER String?  @db.VarChar(200)
+  UPDATE_TIME DateTime @default(now()) @db.DateTime(0)
+  SOURCE_NAME String   @db.VarChar(255)
+  FILE_TYPE   String   @db.VarChar(100)
+  FILE_DIR    String   @db.VarChar(100)
+  OSS_TYPE    String   @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model group_capacity {
+  id                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  group_id          String   @unique(map: "uk_group_id") @default("") @db.VarChar(128)
+  quota             Int      @default(0) @db.UnsignedInt
+  usage             Int      @default(0) @db.UnsignedInt
+  max_size          Int      @default(0) @db.UnsignedInt
+  max_aggr_count    Int      @default(0) @db.UnsignedInt
+  max_aggr_size     Int      @default(0) @db.UnsignedInt
+  max_history_count Int      @default(0) @db.UnsignedInt
+  gmt_create        DateTime @default(now()) @db.DateTime(0)
+  gmt_modified      DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model his_config_info {
+  id                 BigInt   @db.UnsignedBigInt
+  nid                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  data_id            String   @db.VarChar(255)
+  group_id           String   @db.VarChar(128)
+  app_name           String?  @db.VarChar(128)
+  content            String   @db.LongText
+  md5                String?  @db.VarChar(32)
+  gmt_create         DateTime @default(now()) @db.DateTime(0)
+  gmt_modified       DateTime @default(now()) @db.DateTime(0)
+  src_user           String?  @db.Text
+  src_ip             String?  @db.VarChar(50)
+  op_type            String?  @db.Char(10)
+  tenant_id          String?  @default("") @db.VarChar(128)
+  encrypted_data_key String   @default("") @db.VarChar(1024)
+
+  @@index([data_id], map: "idx_did")
+  @@index([gmt_create], map: "idx_gmt_create")
+  @@index([gmt_modified], map: "idx_gmt_modified")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model knowledge_point_items_links {
+  point_id BigInt
+  item_id  String @db.VarChar(64)
+
+  @@index([item_id], map: "idx_items_id")
+  @@index([point_id], map: "idx_point_id")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model knowledge_points_items {
+  item_id     String   @db.VarChar(64)
+  item_value  String   @unique(map: "idx_item_value_unique") @db.VarChar(255)
+  create_time DateTime @db.DateTime(0)
+
+  @@id([item_id, item_value])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model permissions {
+  role     String @db.VarChar(50)
+  resource String @db.VarChar(128)
+  action   String @db.VarChar(8)
+
+  @@unique([role, resource, action], map: "uk_role_permission")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model roles {
+  username String @db.VarChar(50)
+  role     String @db.VarChar(50)
+
+  @@unique([username, role], map: "idx_user_role")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_client {
+  ID                      String   @id @db.VarChar(64)
+  CLIENT_SECRET           String   @db.VarChar(255)
+  RESOURCE_IDS            String?  @db.VarChar(100)
+  SCOPE                   String   @db.VarChar(100)
+  AUTHORIZED_GRANT_TYPES  String   @db.VarChar(255)
+  WEB_SERVER_REDIRECT_URI String   @db.VarChar(255)
+  AUTHORITIES             String?  @db.VarChar(255)
+  ACCESS_TOKEN_VALIDITY   Int
+  REFRESH_TOKEN_VALIDITY  Int
+  ADDITIONAL_INFORMATION  String?  @db.VarChar(255)
+  AUTOAPPROVE             String?  @db.VarChar(255)
+  ENABLED                 Int      @default(1)
+  DELETED                 Int      @default(0)
+  CREATE_DEPT             String?  @db.VarChar(200)
+  CREATE_USER             String?  @db.VarChar(200)
+  CREATE_TIME             DateTime @default(now()) @db.DateTime(0)
+  UPDATE_USER             String?  @db.VarChar(200)
+  UPDATE_TIME             DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_dept {
+  dept_id     String    @id @db.VarChar(20)
+  tenant_id   String?   @db.VarChar(64)
+  name        String?   @db.VarChar(50)
+  sort_order  Int       @default(0)
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  del_flag    String?   @default("0") @db.Char(1)
+  parent_id   String?   @db.VarChar(20)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_dict {
+  id          BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  dict_type   String?   @db.VarChar(100)
+  description String?   @db.VarChar(100)
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  remarks     String?   @db.VarChar(255)
+  system_flag String?   @default("0") @db.Char(1)
+  del_flag    String?   @default("0") @db.Char(1)
+
+  @@index([del_flag], map: "sys_dict_del_flag")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_dict_item {
+  id          BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  dict_id     BigInt
+  item_value  String?   @db.VarChar(100)
+  label       String?   @db.VarChar(100)
+  dict_type   String?   @db.VarChar(100)
+  description String?   @db.VarChar(100)
+  sort_order  Int       @default(0)
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  remarks     String?   @db.VarChar(255)
+  del_flag    String?   @default("0") @db.Char(1)
+
+  @@index([del_flag], map: "sys_dict_item_del_flag")
+  @@index([label], map: "sys_dict_label")
+  @@index([item_value], map: "sys_dict_value")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_file {
+  id          BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  file_name   String?   @db.VarChar(100)
+  bucket_name String?   @db.VarChar(200)
+  original    String?   @db.VarChar(100)
+  type        String?   @db.VarChar(50)
+  file_size   BigInt?
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  del_flag    String?   @default("0") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_log {
+  id          BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  log_type    String?   @default("0") @db.Char(1)
+  title       String?   @db.VarChar(255)
+  service_id  String?   @db.VarChar(32)
+  create_by   String?   @default("") @db.VarChar(64)
+  update_by   String?   @default("") @db.VarChar(64)
+  create_time DateTime? @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  remote_addr String?   @db.VarChar(255)
+  user_agent  String?   @db.VarChar(1000)
+  request_uri String?   @db.VarChar(255)
+  method      String?   @db.VarChar(10)
+  params      String?   @db.Text
+  time        BigInt?
+  del_flag    String?   @default("0") @db.Char(1)
+  exception   String?   @db.Text
+
+  @@index([create_time], map: "sys_log_create_date")
+  @@index([request_uri], map: "sys_log_request_uri")
+  @@index([log_type], map: "sys_log_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_menu {
+  menu_id     BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  name        String?   @db.VarChar(32)
+  en_name     String?   @db.VarChar(128)
+  permission  String?   @db.VarChar(150)
+  path        String?   @db.VarChar(128)
+  parent_id   BigInt?
+  icon        String?   @db.VarChar(64)
+  visible     String?   @default("1") @db.Char(1)
+  sort_order  Float?    @default(1)
+  keep_alive  String?   @default("0") @db.Char(1)
+  embedded    String?   @db.Char(1)
+  menu_type   String?   @default("0") @db.Char(1)
+  create_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_by   String    @default("") @db.VarChar(64)
+  update_time DateTime? @db.DateTime(0)
+  del_flag    String?   @default("0") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_oauth_client_details {
+  id                      BigInt    @id
+  tenant_id               String?   @db.VarChar(64)
+  client_id               String    @db.VarChar(32)
+  resource_ids            String?   @db.VarChar(256)
+  client_secret           String?   @db.VarChar(256)
+  scope                   String?   @db.VarChar(256)
+  authorized_grant_types  String?   @db.VarChar(256)
+  web_server_redirect_uri String?   @db.VarChar(256)
+  authorities             String?   @db.VarChar(256)
+  access_token_validity   Int?
+  refresh_token_validity  Int?
+  additional_information  String?   @db.VarChar(4096)
+  autoapprove             String?   @db.VarChar(256)
+  del_flag                String?   @default("0") @db.Char(1)
+  create_by               String    @default("") @db.VarChar(64)
+  update_by               String    @default("") @db.VarChar(64)
+  create_time             DateTime? @db.DateTime(0)
+  update_time             DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_post {
+  post_id     BigInt    @id
+  tenant_id   String?   @db.VarChar(64)
+  post_code   String    @db.VarChar(64)
+  post_name   String    @db.VarChar(50)
+  post_sort   Int
+  remark      String?   @db.VarChar(500)
+  del_flag    String    @default("0") @db.Char(1)
+  create_time DateTime? @db.DateTime(0)
+  create_by   String    @default("") @db.VarChar(64)
+  update_time DateTime? @db.DateTime(0)
+  update_by   String    @default("") @db.VarChar(64)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_public_param {
+  public_id     BigInt    @id
+  tenant_id     String?   @db.VarChar(64)
+  public_name   String?   @db.VarChar(128)
+  public_key    String?   @db.VarChar(128)
+  public_value  String?   @db.VarChar(128)
+  status        String?   @default("0") @db.Char(1)
+  validate_code String?   @db.VarChar(64)
+  create_by     String    @default("") @db.VarChar(64)
+  update_by     String    @default("") @db.VarChar(64)
+  create_time   DateTime  @default(now()) @db.DateTime(0)
+  update_time   DateTime? @db.DateTime(0)
+  public_type   String?   @default("0") @db.Char(1)
+  system_flag   String?   @default("0") @db.Char(1)
+  del_flag      String?   @default("0") @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_role {
+  role_id     String    @id @db.VarChar(64)
+  tenant_id   String?   @db.VarChar(64)
+  role_name   String?   @db.VarChar(64)
+  role_code   String?   @db.VarChar(64)
+  role_desc   String?   @db.VarChar(255)
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime  @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  del_flag    String?   @default("0") @db.Char(1)
+
+  @@index([role_code], map: "role_idx1_role_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_role_menu {
+  role_id String @db.VarChar(64)
+  menu_id BigInt
+
+  @@id([role_id, menu_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_sso_role_code {
+  diy_id    String @db.VarChar(32)
+  role_code String @db.VarChar(64)
+
+  @@id([diy_id, role_code])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_sso_role_code_copy1 {
+  diy_id    String @db.VarChar(32)
+  role_code String @db.VarChar(64)
+
+  @@id([diy_id, role_code])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_user {
+  user_id     String    @id @db.VarChar(32)
+  tenant_id   String?   @db.VarChar(64)
+  username    String?   @db.VarChar(64)
+  password    String?   @db.VarChar(255)
+  salt        String?   @db.VarChar(255)
+  phone       String?   @db.VarChar(20)
+  avatar      String?   @db.VarChar(255)
+  nickname    String?   @db.VarChar(64)
+  name        String?   @db.VarChar(64)
+  email       String?   @db.VarChar(128)
+  create_by   String    @default("") @db.VarChar(64)
+  update_by   String    @default("") @db.VarChar(64)
+  create_time DateTime? @default(now()) @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  lock_flag   String?   @default("0") @db.Char(1)
+  del_flag    String?   @default("0") @db.Char(1)
+  wx_openid   String?   @db.VarChar(32)
+  mini_openid String?   @db.VarChar(32)
+  qq_openid   String?   @db.VarChar(32)
+  gitee_login String?   @db.VarChar(100)
+  osc_id      String?   @db.VarChar(100)
+  dept_id     String?   @db.VarChar(20)
+
+  @@index([username], map: "user_idx1_username")
+  @@index([qq_openid], map: "user_qq_openid")
+  @@index([wx_openid], map: "user_wx_openid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_user_post {
+  user_id String @db.VarChar(32)
+  post_id BigInt
+
+  @@id([user_id, post_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sys_user_role {
+  user_id String @db.VarChar(32)
+  role_id String @db.VarChar(64)
+
+  @@id([user_id, role_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  uuid              String?   @unique(map: "ux_agent_uuid") @db.VarChar(32)
+  user_id           Int       @db.UnsignedInt
+  avatar            String?   @db.VarChar(255)
+  chat_avatar       String?   @db.VarChar(255)
+  name              String    @db.VarChar(255)
+  intro             String?   @db.VarChar(255)
+  share_able        Int       @default(0) @db.TinyInt
+  app_model         Json?
+  permission        String?   @db.VarChar(30)
+  create_at         DateTime  @default(now()) @db.Timestamp(0)
+  update_at         DateTime  @default(now()) @db.Timestamp(0)
+  category          String?   @db.VarChar(255)
+  top_time          DateTime? @db.DateTime(0)
+  state             Int?      @default(1)
+  prologue          String?   @db.VarChar(255)
+  allow_voice_input Int       @default(0) @db.TinyInt
+  auto_send_voice   Int       @default(0) @db.TinyInt
+  org_id            Int?
+  tenant_id         Int?
+
+  @@index([name], map: "index_name")
+  @@index([user_id], map: "index_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_chat {
+  id                Int      @id @default(autoincrement()) @db.UnsignedInt
+  agent_id          Int      @db.UnsignedInt
+  user_id           Int      @db.UnsignedInt
+  outlink_user_uuid String?  @db.VarChar(100)
+  title             String?  @db.VarChar(255)
+  top               Boolean? @default(false)
+  top_time          DateTime @default(now()) @db.Timestamp(0)
+  create_at         DateTime @default(now()) @db.Timestamp(0)
+  update_at         DateTime @default(now()) @db.Timestamp(0)
+  org_id            Int?
+  tenant_id         Int?
+
+  @@index([agent_id], map: "idx_agent_id")
+  @@index([user_id], map: "idx_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_copy1 {
+  id                Int       @id @default(autoincrement()) @db.UnsignedInt
+  uuid              String?   @unique(map: "ux_agent_uuid") @db.VarChar(32)
+  user_id           Int       @db.UnsignedInt
+  avatar            String?   @db.VarChar(255)
+  chat_avatar       String?   @db.VarChar(255)
+  name              String    @db.VarChar(255)
+  intro             String?   @db.VarChar(255)
+  share_able        Int       @default(0) @db.TinyInt
+  app_model         Json?
+  permission        String?   @db.VarChar(30)
+  create_at         DateTime  @default(now()) @db.Timestamp(0)
+  update_at         DateTime  @default(now()) @db.Timestamp(0)
+  category          String?   @db.VarChar(255)
+  top_time          DateTime? @db.DateTime(0)
+  state             Int?      @default(1)
+  prologue          String?   @db.VarChar(255)
+  allow_voice_input Int       @default(0) @db.TinyInt
+  auto_send_voice   Int       @default(0) @db.TinyInt
+  org_id            Int?
+  tenant_id         Int?
+
+  @@index([name], map: "index_name")
+  @@index([user_id], map: "index_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_data {
+  id               Int       @id @default(autoincrement())
+  user_id          Int?
+  agent_id         Int?
+  click_num        Int?      @default(0)
+  conversation_num Int?      @default(0)
+  thumbs_up_num    Int?      @default(0)
+  hot              BigInt?   @default(0)
+  create_at        DateTime? @db.Timestamp(0)
+  update_at        DateTime? @db.Timestamp(0)
+  org_id           Int?
+  tenant_id        Int?
+
+  @@unique([agent_id, user_id], map: "user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_guide {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  agent_id  Int      @db.UnsignedInt
+  index_num Int      @db.UnsignedInt
+  guide     String?  @db.VarChar(255)
+  create_at DateTime @default(now()) @db.Timestamp(0)
+  update_at DateTime @default(now()) @db.Timestamp(0)
+  org_id    Int?
+  tenant_id Int?
+
+  @@index([agent_id], map: "index_agent_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_knowledge {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  agent_id     Int      @db.UnsignedInt
+  knowledge_id Int      @db.UnsignedInt
+  create_at    DateTime @default(now()) @db.Timestamp(0)
+  update_at    DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([agent_id], map: "index_agent_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_market {
+  id               Int       @id @default(autoincrement())
+  user_id          Int?
+  agent_id         Int?
+  click_num        Int?      @default(0)
+  conversation_num Int?      @default(0)
+  thumbs_up_num    Int?      @default(0)
+  hot              Int?      @default(0)
+  category         String?   @db.VarChar(255)
+  create_at        DateTime? @db.Timestamp(0)
+  update_at        DateTime? @db.Timestamp(0)
+  org_id           Int?
+  tenant_id        Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_official {
+  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  agent_id  Int       @db.UnsignedInt
+  top_time  DateTime? @db.DateTime(0)
+  ext_json  Json?
+  create_at DateTime  @default(now()) @db.Timestamp(0)
+  update_at DateTime  @default(now()) @db.Timestamp(0)
+  org_id    Int?
+  tenant_id Int?
+
+  @@index([agent_id], map: "idx_agent_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_outlink {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  name          String    @db.VarChar(255)
+  agent_id      Int       @db.UnsignedInt
+  link_url      String    @db.VarChar(255)
+  password      String?   @db.VarChar(32)
+  expire_time   DateTime? @db.DateTime(0)
+  consumer_cost Int       @default(1) @db.TinyInt
+  create_at     DateTime  @default(now()) @db.Timestamp(0)
+  update_at     DateTime  @default(now()) @db.Timestamp(0)
+  link_pv       Int?      @default(0)
+  org_id        Int?
+  tenant_id     Int?
+
+  @@index([agent_id], map: "idx_agent_id")
+  @@index([link_url], map: "idx_link_url")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_release_version {
+  id                Int       @id @default(autoincrement())
+  uuid              String?   @db.VarChar(32)
+  name              String?   @db.VarChar(255)
+  user_id           Int?
+  state             Int?      @default(2)
+  version           Int?      @default(0)
+  agent_id          Int?
+  avatar            String?   @db.VarChar(255)
+  chat_avatar       String?   @db.VarChar(255)
+  intro             String?   @db.VarChar(255)
+  app_model         Json?
+  category          String?   @db.VarChar(255)
+  create_at         DateTime? @db.Timestamp(0)
+  update_at         DateTime? @db.Timestamp(0)
+  prologue          String?   @db.VarChar(255)
+  allow_voice_input Int       @default(0) @db.TinyInt
+  auto_send_voice   Int       @default(0) @db.TinyInt
+  org_id            Int?
+  tenant_id         Int?
+
+  @@index([agent_id], map: "idx_agent_id")
+  @@index([user_id], map: "idx_user_id")
+  @@index([uuid], map: "idx_uuid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_share {
+  id         Int       @id @default(autoincrement())
+  share_name String?   @db.VarChar(20)
+  user_name  String?   @db.VarChar(20)
+  url        String?   @db.VarChar(200)
+  create_ta  DateTime? @default(now()) @db.Timestamp(0)
+  org_id     Int?
+  tenant_id  Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_agent_user_data {
+  id               Int       @id @default(autoincrement())
+  user_id          Int?
+  agent_id         Int?
+  thumbs_up_num    Int?      @default(0)
+  click_num        Int?      @default(0)
+  conversation_num Int?      @default(0)
+  create_at        DateTime? @db.Timestamp(0)
+  update_at        DateTime? @db.Timestamp(0)
+  org_id           Int?
+  tenant_id        Int?
+
+  @@unique([user_id, agent_id], map: "t_agent_user_data_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_custom_tool {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  name           String   @db.VarChar(100)
+  description    String   @default("") @db.VarChar(1024)
+  avatar         String   @db.VarChar(1024)
+  api_config     Json?
+  plugin_json    Json?
+  used_in_agents Json?
+  pass_test      Int      @default(0) @db.TinyInt
+  published      Int      @default(0) @db.TinyInt
+  create_by      Int
+  update_by      Int
+  create_at      DateTime @default(now()) @db.Timestamp(0)
+  update_at      DateTime @default(now()) @db.Timestamp(0)
+  org_id         Int?
+  tenant_id      Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_db {
+  id          BigInt   @id @default(autoincrement())
+  db_uuid     String   @db.VarChar(255)
+  type        String   @db.VarChar(50)
+  name        String   @db.VarChar(100)
+  avatar_url  String?  @db.VarChar(500)
+  description String?  @db.VarChar(500)
+  db_config   Json?
+  create_by   Int
+  update_by   Int
+  create_at   DateTime @default(now()) @db.Timestamp(0)
+  update_at   DateTime @default(now()) @db.Timestamp(0)
+  org_id      Int?
+  tenant_id   Int?
+
+  @@index([db_uuid], map: "idx_db_uuid")
+  @@index([tenant_id, org_id], map: "idx_tenant_org")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_db_columns {
+  id             BigInt   @id @default(autoincrement())
+  db_id          BigInt
+  table_id       BigInt
+  column_name    String   @db.VarChar(200)
+  column_comment String?  @db.VarChar(2000)
+  manual_comment String?  @db.VarChar(500)
+  column_type    String   @db.VarChar(100)
+  state          Int      @default(1)
+  create_by      Int
+  update_by      Int
+  create_at      DateTime @default(now()) @db.Timestamp(0)
+  update_at      DateTime @default(now()) @db.Timestamp(0)
+  org_id         Int?
+  tenant_id      Int?
+
+  @@index([db_id, table_id], map: "idx_db_table_id")
+  @@index([tenant_id, org_id], map: "idx_tenant_org")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_db_tables {
+  id                  BigInt   @id @default(autoincrement())
+  table_name          String   @db.VarChar(200)
+  table_description   String?  @db.VarChar(500)
+  original_table_name String   @db.VarChar(500)
+  table_comment       String   @default("") @db.VarChar(500)
+  db_id               BigInt
+  create_by           Int
+  update_by           Int
+  create_at           DateTime @default(now()) @db.Timestamp(0)
+  update_at           DateTime @default(now()) @db.Timestamp(0)
+  org_id              Int?
+  tenant_id           Int?
+
+  @@index([db_id], map: "idx_db_id")
+  @@index([tenant_id, org_id], map: "idx_tenant_org")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_contrast_group {
+  id               BigInt   @id @default(autoincrement())
+  group_name       String   @db.VarChar(255)
+  contrast_content Json
+  create_by        Int
+  update_by        Int
+  create_at        DateTime @default(now()) @db.Timestamp(0)
+  update_at        DateTime @default(now()) @db.Timestamp(0)
+  org_id           Int?
+  tenant_id        Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_group {
+  id              BigInt   @id @default(autoincrement())
+  group_name      String   @db.VarChar(255)
+  parent_group_id BigInt?
+  create_by       Int
+  update_by       Int
+  create_at       DateTime @default(now()) @db.Timestamp(0)
+  update_at       DateTime @default(now()) @db.Timestamp(0)
+  org_id          Int?
+  tenant_id       Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_label {
+  id         BigInt   @id @default(autoincrement())
+  label_name String   @db.VarChar(255)
+  create_by  Int
+  update_by  Int
+  create_at  DateTime @default(now()) @db.Timestamp(0)
+  update_at  DateTime @default(now()) @db.Timestamp(0)
+  org_id     Int?
+  tenant_id  Int?
+
+  @@index([tenant_id, org_id], map: "idx_tenant_org")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_label_relation {
+  rule_id   BigInt
+  label_id  BigInt
+  tenant_id Int?
+
+  @@id([rule_id, label_id])
+  @@index([label_id], map: "idx_label")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_record {
+  id                    BigInt   @id @default(autoincrement())
+  task_uuid             String   @db.VarChar(255)
+  review_type           Int      @default(0)
+  params                Json
+  execution_result      Json
+  status                Int
+  execution_start_time  DateTime @default(now()) @db.Timestamp(0)
+  execution_finish_time DateTime @default(now()) @db.Timestamp(0)
+  create_by             Int?
+  update_by             Int?
+  create_at             DateTime @default(now()) @db.Timestamp(0)
+  update_at             DateTime @default(now()) @db.Timestamp(0)
+  org_id                Int?
+  tenant_id             Int?
+
+  @@index([task_uuid], map: "idx_task_uuid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_document_review_rule {
+  id           BigInt   @id @default(autoincrement())
+  group_id     BigInt
+  rule_name    String?  @db.VarChar(255)
+  rule_type    Int
+  rule_source  Json?
+  rule_content Json
+  create_by    Int
+  update_by    Int
+  create_at    DateTime @default(now()) @db.Timestamp(0)
+  update_at    DateTime @default(now()) @db.Timestamp(0)
+  org_id       Int?
+  tenant_id    Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_feishu_user {
+  id          Int       @id
+  name        String?   @db.VarChar(10)
+  user_id     String?   @db.VarChar(255)
+  calendar_id String?   @db.VarChar(255)
+  create_at   DateTime? @db.Timestamp(0)
+  update_at   DateTime? @db.Timestamp(0)
+}
+
+model t_i18n_messages {
+  id     Int    @id @default(autoincrement())
+  locale String @db.VarChar(10)
+  item   String @db.VarChar(512)
+  msg    String @db.Text
+
+  @@unique([locale, item], map: "local_item")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_job_info {
+  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  job_name  String?  @db.VarChar(64)
+  target    String?  @db.VarChar(64)
+  remarks   String?  @db.VarChar(255)
+  cron      String   @db.VarChar(32)
+  state     String?  @db.VarChar(16)
+  biz_type  String?  @db.VarChar(32)
+  biz_Key   String?  @db.VarChar(32)
+  ext_json  Json?
+  create_at DateTime @default(now()) @db.Timestamp(0)
+  update_at DateTime @default(now()) @db.Timestamp(0)
+  org_id    Int?
+  tenant_id Int?
+
+  @@unique([biz_type, biz_Key], map: "ux_job")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_kb_ds_task {
+  id                BigInt   @id @default(autoincrement())
+  kb_id             BigInt
+  kb_ds_id          BigInt
+  status            Int      @default(0)
+  task_type         String?  @default("kb") @db.VarChar(32)
+  is_chunk_finished Int      @default(0)
+  chunk_count       Int      @default(0)
+  success_count     Int      @default(0)
+  fail_count        Int      @default(0)
+  remark            String?  @db.VarChar(100)
+  create_by         Int
+  update_by         Int
+  create_at         DateTime @default(now()) @db.Timestamp(0)
+  update_at         DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([kb_ds_id], map: "idx_kb_ds_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_kb_ds_task_log {
+  id        BigInt   @id @default(autoincrement())
+  kb_ds_id  BigInt
+  task_id   BigInt
+  remark    String?  @db.Text
+  use_time  BigInt?  @default(0)
+  create_at DateTime @default(now()) @db.Timestamp(0)
+  update_at DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([kb_ds_id], map: "idx_kb_ds_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_knowledge_base {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  user_id      Int      @db.UnsignedInt
+  parent_id    Int?     @db.UnsignedInt
+  avatar_url   String?  @db.VarChar(255)
+  name         String   @db.VarChar(100)
+  description  String?  @db.VarChar(500)
+  vector_model String   @db.VarChar(100)
+  tags         Json?
+  type         String   @db.VarChar(16)
+  state        Int      @db.UnsignedInt
+  data_amount  Int?     @default(0) @db.UnsignedInt
+  ext_json     Json?
+  kb_type      Int      @default(0)
+  create_by    Int
+  update_by    Int
+  create_at    DateTime @default(now()) @db.Timestamp(0)
+  update_at    DateTime @default(now()) @db.Timestamp(0)
+  org_id       Int?
+  tenant_id    Int?
+
+  @@unique([user_id, name], map: "uk_userKb")
+  @@index([parent_id], map: "idx_parentId")
+  @@index([user_id], map: "idx_userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_knowledge_ds {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  kb_id          Int      @db.UnsignedInt
+  user_id        Int      @db.UnsignedInt
+  parent_id      Int?     @db.UnsignedInt
+  name           String   @db.VarChar(2048)
+  ext_json       Json?
+  file_id        String?  @db.VarChar(100)
+  type           String   @db.VarChar(16)
+  training_type  String   @db.VarChar(16)
+  state          Int      @db.UnsignedInt
+  training_state Int      @db.UnsignedInt
+  data_amount    Int?     @default(0) @db.UnsignedInt
+  create_by      Int
+  update_by      Int
+  create_at      DateTime @default(now()) @db.Timestamp(0)
+  update_at      DateTime @default(now()) @db.Timestamp(0)
+  org_id         Int?
+  tenant_id      Int?
+
+  @@index([kb_id, parent_id], map: "idx_kbId_parentId")
+  @@index([user_id], map: "idx_userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_openapi_auth {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  user_id      Int      @db.UnsignedInt
+  auth_key     String   @unique(map: "idx_auth_key") @db.VarChar(64)
+  auth_secret  String?  @db.VarChar(64)
+  auth_type    String?  @db.VarChar(64)
+  ref_key      String?  @db.VarChar(64)
+  create_at    DateTime @default(now()) @db.Timestamp(0)
+  update_at    DateTime @default(now()) @db.Timestamp(0)
+  encrypt_type String?  @default("md5") @db.VarChar(16)
+  encrypt_key  String?  @db.VarChar(512)
+  org_id       Int?
+  tenant_id    Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_spider {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  name            String    @db.VarChar(100)
+  root_url        String    @db.VarChar(1024)
+  state           Int
+  page_count      Int
+  last_run_at     DateTime? @db.Timestamp(0)
+  export_config   Json?
+  spider_config   Json?
+  schedule_config Json?
+  create_by       Int
+  update_by       Int
+  create_at       DateTime  @default(now()) @db.Timestamp(0)
+  update_at       DateTime  @default(now()) @db.Timestamp(0)
+  org_id          Int?
+  tenant_id       Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_config {
+  id             Int      @id @default(autoincrement()) @db.UnsignedInt
+  conf_type      String?  @db.VarChar(64)
+  conf_key       String?  @db.VarChar(64)
+  conf_name      String?  @db.VarChar(64)
+  conf_value     Json?
+  locale         String?  @db.VarChar(10)
+  protected_keys String?  @db.VarChar(128)
+  create_at      DateTime @default(now()) @db.Timestamp(0)
+  update_at      DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([conf_key, conf_type], map: "idx_conf_key")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_data_scope {
+  id             BigInt   @id @default(autoincrement())
+  biz_id         String   @db.VarChar(255)
+  biz_type       String   @db.VarChar(255)
+  scope_type     Int?     @default(1)
+  scope_id       Int
+  privilege_type Int?     @default(1)
+  create_by      Int?
+  update_by      Int?
+  create_at      DateTime @default(now()) @db.Timestamp(0)
+  update_at      DateTime @default(now()) @db.Timestamp(0)
+  org_id         Int?
+  tenant_id      Int?
+
+  @@unique([biz_id, biz_type, scope_type, scope_id], map: "uk_biz_id_biz_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_org {
+  org_id    Int      @id @default(autoincrement())
+  parent_id Int?     @default(0)
+  ancestors String?  @default("") @db.VarChar(50)
+  org_name  String?  @default("") @db.VarChar(30)
+  sort_num  Int?     @default(0)
+  leader    String?  @db.VarChar(20)
+  phone     String?  @db.VarChar(20)
+  email     String?  @db.VarChar(50)
+  status    Int?     @default(1)
+  del_flag  Int?     @default(0)
+  create_by Int?
+  update_by Int?
+  create_at DateTime @default(now()) @db.Timestamp(0)
+  update_at DateTime @default(now()) @db.Timestamp(0)
+  tenant_id Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_permission {
+  permission_id   Int      @id @default(autoincrement())
+  permission_name String   @db.VarChar(50)
+  parent_id       Int?     @default(0)
+  sort_num        Int?     @default(0)
+  url             String?  @default("#") @db.VarChar(200)
+  target          String?  @default("") @db.VarChar(20)
+  permission_type String?  @default("") @db.Char(1)
+  visible_flag    Int?     @default(0)
+  refresh_flag    Int?     @default(1)
+  permission_code String?  @db.VarChar(100)
+  app_code        String?  @default("default") @db.VarChar(100)
+  icon            String?  @default("#") @db.VarChar(100)
+  status          Int?     @default(1)
+  remark          String?  @default("") @db.VarChar(500)
+  del_flag        Int?     @default(0)
+  create_by       Int?
+  update_by       Int?
+  create_at       DateTime @default(now()) @db.Timestamp(0)
+  update_at       DateTime @default(now()) @db.Timestamp(0)
+  tenant_id       Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_role {
+  role_id    Int      @id @default(autoincrement())
+  role_name  String   @db.VarChar(30)
+  role_key   String?  @db.VarChar(100)
+  sort_num   Int?
+  data_scope Int?     @default(1)
+  status     Int?     @default(1)
+  remark     String?  @db.VarChar(500)
+  del_flag   Int?     @default(0)
+  create_by  Int?
+  update_by  Int?
+  create_at  DateTime @default(now()) @db.Timestamp(0)
+  update_at  DateTime @default(now()) @db.Timestamp(0)
+  tenant_id  Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_role_org {
+  role_id   Int
+  org_id    Int
+  tenant_id Int?
+
+  @@id([role_id, org_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_role_permission {
+  role_id       Int
+  permission_id Int
+  tenant_id     Int?
+
+  @@id([role_id, permission_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_sys_user_role {
+  user_id   Int
+  role_id   Int
+  tenant_id Int?
+
+  @@id([user_id, role_id])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_tenant {
+  id            Int      @id @default(autoincrement()) @db.UnsignedInt
+  name          String   @db.VarChar(255)
+  code          String?  @db.VarChar(255)
+  platform_name String?  @db.VarChar(255)
+  logo_url      String?  @db.VarChar(512)
+  industry      String?  @db.VarChar(255)
+  phone_number  String?  @db.VarChar(20)
+  email         String?  @db.VarChar(255)
+  root_user_id  Int?     @db.UnsignedInt
+  state         Int?     @default(1)
+  remark        String?  @db.VarChar(255)
+  root_org_id   Int?     @db.UnsignedInt
+  ext_json      Json?
+  create_by     Int
+  create_at     DateTime @default(now()) @db.Timestamp(0)
+  update_at     DateTime @default(now()) @db.Timestamp(0)
+
+  @@index([name], map: "idx_name")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_user {
+  id                     Int       @id @default(autoincrement()) @db.UnsignedInt
+  name                   String    @db.VarChar(255)
+  nick_name              String?   @db.VarChar(127)
+  avatar_url             String?   @db.VarChar(255)
+  phone_number           String?   @db.VarChar(20)
+  external_id            String?   @db.VarChar(255)
+  password               String?   @db.VarChar(255)
+  register_time          DateTime? @db.DateTime(0)
+  tenant_id              Int       @db.UnsignedInt
+  create_at              DateTime  @default(now()) @db.Timestamp(0)
+  update_at              DateTime  @default(now()) @db.Timestamp(0)
+  admin                  Int?      @default(0)
+  user_type              String?   @default("normal") @db.VarChar(32)
+  state                  Int?      @default(1)
+  invited_by_external_id String?   @db.VarChar(255)
+  ext_json               Json?
+  email                  String?   @db.VarChar(255)
+  remark                 String?   @db.VarChar(500)
+  org_id                 Int?
+
+  @@unique([tenant_id, name], map: "uk_user_tenant")
+  @@index([external_id], map: "idx_external_id")
+  @@index([name], map: "idx_name")
+  @@index([phone_number], map: "idx_phone_number")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_user_api_config {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  type       String   @db.VarChar(255)
+  user_id    Int      @db.UnsignedInt
+  api_key    String?  @db.VarChar(20)
+  api_secret String?  @db.VarChar(255)
+  enable     Int      @default(1) @db.TinyInt
+  create_at  DateTime @default(now()) @db.Timestamp(0)
+  update_at  DateTime @default(now()) @db.Timestamp(0)
+
+  @@unique([user_id, type, api_key], map: "unique_api_type")
+  @@index([type], map: "idx_api_type")
+  @@index([user_id], map: "idx_user_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_user_chat_quota {
+  user_id     Int      @id @db.UnsignedInt
+  chat_quota  Int      @default(0) @db.UnsignedInt
+  chat_record Int      @default(0) @db.UnsignedInt
+  create_at   DateTime @default(now()) @db.Timestamp(0)
+  update_at   DateTime @default(now()) @db.Timestamp(0)
+  org_id      Int?
+  tenant_id   Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_user_like_recording {
+  id        Int       @id @default(autoincrement())
+  user_id   Int?
+  agent_id  Int?
+  num       Int?      @default(0)
+  create_at DateTime? @db.Timestamp(0)
+  update_at DateTime? @db.Timestamp(0)
+  org_id    Int?
+  tenant_id Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tenant_capacity {
+  id                BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  tenant_id         String   @unique(map: "uk_tenant_id") @default("") @db.VarChar(128)
+  quota             Int      @default(0) @db.UnsignedInt
+  usage             Int      @default(0) @db.UnsignedInt
+  max_size          Int      @default(0) @db.UnsignedInt
+  max_aggr_count    Int      @default(0) @db.UnsignedInt
+  max_aggr_size     Int      @default(0) @db.UnsignedInt
+  max_history_count Int      @default(0) @db.UnsignedInt
+  gmt_create        DateTime @default(now()) @db.DateTime(0)
+  gmt_modified      DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tenant_info {
+  id            BigInt  @id @default(autoincrement())
+  kp            String  @db.VarChar(128)
+  tenant_id     String? @default("") @db.VarChar(128)
+  tenant_name   String? @default("") @db.VarChar(128)
+  tenant_desc   String? @db.VarChar(256)
+  create_source String? @db.VarChar(32)
+  gmt_create    BigInt
+  gmt_modified  BigInt
+
+  @@unique([kp, tenant_id], map: "uk_tenant_info_kptenantid")
+  @@index([tenant_id], map: "idx_tenant_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_catalogue_links {
+  user_id      String  @db.VarChar(32)
+  catalogue_id BigInt
+  role_type    String? @db.VarChar(32)
+  agent_ids    String? @db.VarChar(512)
+
+  @@index([catalogue_id], map: "idx_catalogue_id")
+  @@index([user_id], map: "idx_user_id")
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_learning_account {
+  id          BigInt    @id
+  state       Boolean?  @default(false)
+  score_value Decimal?  @default(0.00) @db.Decimal(10, 2)
+  description String?   @db.VarChar(255)
+  create_by   String    @db.VarChar(32)
+  create_time DateTime  @db.DateTime(0)
+  update_by   String?   @db.VarChar(32)
+  update_time DateTime? @db.DateTime(0)
+
+  @@index([create_by], map: "idx_create_by")
+  @@index([score_value], map: "idx_score")
+  @@index([state], map: "idx_state")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_login_mark {
+  user_id     String    @db.VarChar(32)
+  remote_addr String?   @db.VarChar(32)
+  time        BigInt?
+  create_time DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_score_value_record {
+  id                  String    @id @db.VarChar(255)
+  learning_account_id BigInt
+  source              Int?      @db.TinyInt
+  record_type         Int?      @db.TinyInt
+  score_change        Decimal?  @db.Decimal(10, 2)
+  expiration_date     DateTime? @db.DateTime(0)
+  create_by           String    @db.VarChar(32)
+  create_time         DateTime  @db.DateTime(0)
+  update_by           String?   @db.VarChar(32)
+  update_time         DateTime  @db.DateTime(0)
+
+  @@index([learning_account_id], map: "idx_account_id")
+  @@index([create_by], map: "idx_create_by")
+  @@index([record_type], map: "idx_record_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_suggestions {
+  id                BigInt    @id
+  title             String?   @db.VarChar(255)
+  content           String    @db.VarChar(2048)
+  pic               String?   @db.VarChar(2048)
+  type              Int       @db.TinyInt
+  remark            String?   @db.VarChar(255)
+  status            Int?      @db.TinyInt
+  processing_person String?   @db.VarChar(64)
+  replay_content    String?   @db.VarChar(1024)
+  replay_pic        String?   @db.VarChar(1024)
+  create_by         String    @db.VarChar(32)
+  create_time       DateTime  @db.DateTime(0)
+  update_by         String?   @db.VarChar(32)
+  update_time       DateTime? @db.DateTime(0)
+
+  @@index([create_by], map: "idx_create_by")
+  @@index([processing_person], map: "idx_processing_person")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  username String  @id @db.VarChar(50)
+  password String  @db.VarChar(500)
+  enabled  Boolean
+}

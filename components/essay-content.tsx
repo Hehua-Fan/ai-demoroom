@@ -2,8 +2,8 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { Checkbox } from "@/components/ui/checkbox";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Copy, Check } from "lucide-react";
 import { EvaluationResult } from "@/types/evaluation";
 
@@ -150,12 +150,12 @@ const ColorCodedText: React.FC<{ text: string; evaluationResult: EssayContentPro
 const EssayContent: React.FC<EssayContentProps> = ({
   essayText,
   setEssayText,
-  checkSpeed,
-  setCheckSpeed,
-  checkConsistency,
-  setCheckConsistency,
-  scoreSystem,
-  setScoreSystem,
+  // checkSpeed,
+  // setCheckSpeed,
+  // checkConsistency,
+  // setCheckConsistency,
+  // scoreSystem,
+  // setScoreSystem,
   isLoading,
   onEvaluate,
   evaluationResult,
@@ -199,7 +199,7 @@ const EssayContent: React.FC<EssayContentProps> = ({
         )}
         
         <div className="mt-4 space-y-3">
-          <div className="flex items-center space-x-4 text-xs text-gray-600">
+          {/* <div className="flex items-center space-x-4 text-xs text-gray-600">
             <label className="flex items-center space-x-2">
               <Checkbox 
                 checked={checkSpeed}
@@ -232,12 +232,12 @@ const EssayContent: React.FC<EssayContentProps> = ({
                 </SelectContent>
               </Select>
             </div>
-          </div>
+          </div> */}
 
           <Button
             onClick={handleEvaluate}
             disabled={isLoading || !essayText.trim()}
-            className="w-full bg-[#706eff] hover:bg-[#5a58cc] text-white shadow-sm transition-all duration-200 h-8 text-sm"
+            className="w-full bg-[#706eff] hover:bg-[#5a58cc] text-white shadow-sm transition-all duration-200 h-8 text-sm cursor-pointer"
           >
             {isLoading ? "正在批改..." : (shouldShowColoredText ? "重新批改" : "开始批改")}
           </Button>

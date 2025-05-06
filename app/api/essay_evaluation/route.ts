@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
+// #region 类型定义
 interface AgentResponse {
   choices: Array<{
     content: string;
@@ -18,22 +20,10 @@ interface ParagraphComments {
 
 interface EvaluationResult {
   总体评分: number;
-  词汇运用: {
-    得分: number;
-    评价: string;
-  };
-  句子结构: {
-    得分: number;
-    评价: string;
-  };
-  文章结构: {
-    得分: number;
-    评价: string;
-  };
-  内容相关性: {
-    得分: number;
-    评价: string;
-  };
+  词汇运用: { 得分: number; 评价: string };
+  句子结构: { 得分: number; 评价: string };
+  文章结构: { 得分: number; 评价: string };
+  内容相关性: { 得分: number; 评价: string };
   语言复杂度统计: {
     总词数: number;
     总句子数: number;
@@ -56,6 +46,9 @@ interface EvaluationResult {
     [key: string]: ParagraphComments;
   };
 }
+// #endregion
+
+const prisma = new PrismaClient();
 
 const logger = {
   info: (msg: string) => console.log(`[INFO] ${msg}`),
@@ -64,17 +57,11 @@ const logger = {
 
 /**
  * 清理可能包含Markdown代码块的JSON字符串
- * @param jsonString 可能包含Markdown代码块的JSON字符串
- * @returns 清理后的JSON字符串
  */
 function cleanJsonString(jsonString: string): string {
-  // 移除开头的```json或```标记
   let cleaned = jsonString.replace(/^```(?:json)?\n/, '');
-  // 移除结尾的```标记
   cleaned = cleaned.replace(/\n```$/, '');
-  // 移除可能存在的其他Markdown格式
-  cleaned = cleaned.trim();
-  return cleaned;
+  return cleaned.trim();
 }
 
 export async function POST(request: NextRequest) {
@@ -87,12 +74,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing environment variables' }, { status: 500 });
     }
 
-    const { text } = await request.json();
+    // ✅ 加上 userId 的解析
+    const { text, userId } = await request.json();
+
     if (!text || typeof text !== 'string') {
       return NextResponse.json({ error: 'Invalid or missing essay text' }, { status: 400 });
     }
 
-    const url = "https://uat.agentspro.cn/openapi/agent/chat/completions/v1";
+    if (!userId || typeof userId !== 'string') {
+      return NextResponse.json({ error: 'Invalid or missing userId' }, { status: 400 });
+    }
+
+    // 🔗 远程调用大模型接口
+    const url = "http://10.16.4.181:50351/openapi/agent/chat/completions/v1";
+    // const url = "https://uat.agentspro.cn/openapi/agent/chat/completions/v1";
     const headers = {
       'Authorization': `Bearer ${authKey}.${authSecret}`,
       'Content-Type': 'application/json',
@@ -115,19 +110,35 @@ export async function POST(request: NextRequest) {
     }
 
     const data: AgentResponse = await response.json();
-    
-    // 清理并解析 JSON
     const cleanedContent = cleanJsonString(data.choices[0].content);
-    
+
+    // ✅ JSON 解析 + 写入数据库
     try {
-      const result = JSON.parse(cleanedContent) as EvaluationResult;
-      logger.info(`Parsed result: ${JSON.stringify(result, null, 2)}`);
+      // 先解析为普通对象，然后转回字符串再转回对象
+      // 这样可以确保对象可以安全地作为JSON存储
+      const parsedResult = JSON.parse(cleanedContent);
       
-      // 直接返回原始结果，保持中文字段结构
+      // 使用这种方式处理，避免类型错误
+      const result = parsedResult as EvaluationResult;
+      
+      logger.info(`Parsed result: ${JSON.stringify(result, null, 2)}`);
+
+      await prisma.english_writing_review.create({
+        data: {
+          user_id: userId,
+          essay_text: text,
+          // 先将对象转换为字符串，再转回对象，确保适合作为JSON存储
+          review_json: JSON.parse(JSON.stringify(result)),
+        },
+      });
+
+      logger.info(`Saved evaluation result for user: ${userId}`);
       return NextResponse.json(result);
     } catch (error) {
-      throw error;
+      logger.error("JSON parse error: " + String(error));
+      return NextResponse.json({ error: 'Failed to parse model response' }, { status: 500 });
     }
+
   } catch (err) {
     logger.error(`Evaluation failed: ${err}`);
     return NextResponse.json({ error: 'Evaluation failed' }, { status: 500 });
